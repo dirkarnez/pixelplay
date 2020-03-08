@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+        table {
+            border-collapse: collapse;
+            background-color: black;
+        }
+
+        td {
+            width: 2px;
+            height: 2px;
+        }
+  </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        class Table extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    data: [[]]
+                }
+                this.paste = this.paste.bind(this);
+            }
+
+            paste() {
+                navigator.clipboard.readText().then(text => {
+                    try {
+                        var jsonObject = JSON.parse(text);
+                        if (!Array.isArray(jsonObject)) {
+                            alert("Not JSON array");
+                        } else {
+                            this.setState({data: jsonObject});
+                        }
+                    } catch (e) {
+                        alert("Not a JSON")
+                    }
+                })
+            }
+            render() {
+                const { data } = this.state;
+                return (
+                    <React.Fragment>
+                        <button onClick={this.paste}>Paste</button>
+                        <table border="1">
+                            <tbody>
+                                { 
+                                    // new Array(64).fill(new Array(265).fill(1))
+                                    data.map(row => (
+                                        <tr>
+                                            {
+                                                row.map(column => (
+                                                    <td style={{backgroundColor: `rgb(${column[0]}, ${column[1]}, ${column[2]})`}}/>
+                                                ))
+                                            }
+                                        </tr>
+                                    ))
+                                }
+                            </tbody>
+                        </table>
+                    </React.Fragment>
+                );
+            }
+        }
+        
+        ReactDOM.render(
+            <Table/>,
+            document.getElementById('root')
+        );
+
+    </script>
+</body>
+</html>
